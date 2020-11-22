@@ -9,7 +9,6 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -47,7 +46,7 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) throws URISyntaxException {
+    public AmqpTemplate rabbitTemplate() throws URISyntaxException {
         URI rabbitMqUrl = URI.create(getEnvOrThrow("CLOUDAMQP_URL"));
 
         if (rabbitMqUrl == null)
@@ -60,7 +59,7 @@ public class RabbitMQConfig {
         factory.setPort(rabbitMqUrl.getPort());
         factory.setVirtualHost(rabbitMqUrl.getPath().substring(1));
         
-        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        final RabbitTemplate rabbitTemplate = new RabbitTemplate(factory);
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
         return rabbitTemplate;
     }
