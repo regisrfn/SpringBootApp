@@ -48,7 +48,7 @@ https://github.com/regisrfn/rabbitMqConsumer
 
 # Deploy To heroku
  - The application was deployed to heroku 
- - RabbitMq add on installed on heroku app ->  heroku addons:create cloudamqp:lemur
+ - RabbitMq add on installed on heroku app ->  heroku addons:create cloudamqp:lemur -> (https://elements.heroku.com/addons/cloudamqp)
  
  - Can be tested on:
  https://rufino-spring-boot.herokuapp.com/api/v1/order/
