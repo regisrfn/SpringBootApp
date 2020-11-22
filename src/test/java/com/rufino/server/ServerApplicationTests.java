@@ -2,6 +2,7 @@ package com.rufino.server;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -224,7 +225,7 @@ class ServerApplicationTests {
 
 		ObjectMapper om = new ObjectMapper();
 		String jsonString = om.writeValueAsString(order);
-		assertEquals(jsonString,result.getResponse().getContentAsString());
+		assertEquals(jsonString, result.getResponse().getContentAsString());
 
 	}
 
@@ -232,12 +233,29 @@ class ServerApplicationTests {
 	public void getOrderHttp_NotFoundOrder() throws Exception {
 		UUID id = UUID.fromString("0332d486-2855-11eb-adc1-0242ac120002");
 
-		MvcResult result = mockMvc.perform(
-				get(String.format("/api/v1/order/%s",id)).contentType(MediaType.APPLICATION_JSON))
+		MvcResult result = mockMvc
+				.perform(get(String.format("/api/v1/order/%s", id)).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andReturn();
 
-		assertEquals("",result.getResponse().getContentAsString());
+		assertEquals("", result.getResponse().getContentAsString());
 
+	}
+
+	@Test
+	public void rabbitTest() {
+		URI rabbitMq;
+		String rabbitMqUrl = getEnv("CLOUDAMQP_URL");
+		if (rabbitMqUrl == null) {
+			rabbitMq = URI.create("amqp://guest:guest@localhost:5672");
+		}else{
+			rabbitMq = URI.create(rabbitMqUrl);
+		}
+		assertEquals("amqp://guest:guest@localhost:5672", rabbitMq.toString());
+		assertEquals("localhost", rabbitMq.getHost());
+		assertEquals("guest", rabbitMq.getUserInfo().split(":")[0]);
+		assertEquals("guest", rabbitMq.getUserInfo().split(":")[1]);
+		assertEquals(5672, rabbitMq.getPort());
+		assertEquals("", rabbitMq.getPath());
 	}
 
 	// -----------------------------------------------------
@@ -251,6 +269,14 @@ class ServerApplicationTests {
 		orderService.addOrder(order);
 		long countAfterInsert = jdbcTemplate.queryForObject("select count(*) from orders", Long.class);
 		assertEquals(1, countAfterInsert);
+	}
+
+	private String getEnv(String name) {
+		final String env = System.getenv(name);
+		if (env == null) {
+			System.out.println("Environment variable [" + name + "] is not set.");
+		}
+		return env;
 	}
 
 }
