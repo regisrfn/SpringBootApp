@@ -1,10 +1,14 @@
 package com.rufino.server.config;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -43,9 +47,29 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) throws URISyntaxException {
+        URI rabbitMqUrl = URI.create(getEnvOrThrow("CLOUDAMQP_URL"));
+
+        if (rabbitMqUrl == null)
+            rabbitMqUrl = URI.create("amqp://guest:guest@localhost");
+
+        final CachingConnectionFactory factory = new CachingConnectionFactory();
+        factory.setUsername(rabbitMqUrl.getUserInfo().split(":")[0]);
+        factory.setPassword(rabbitMqUrl.getUserInfo().split(":")[1]);
+        factory.setHost(rabbitMqUrl.getHost());
+        factory.setPort(rabbitMqUrl.getPort());
+        factory.setVirtualHost(rabbitMqUrl.getPath().substring(1));
+        
         final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
         return rabbitTemplate;
+    }
+
+    private static String getEnvOrThrow(String name) {
+        final String env = System.getenv(name);
+        if (env == null) {
+            throw new IllegalStateException("Environment variable [" + name + "] is not set.");
+        }
+        return env;
     }
 }
