@@ -28,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-
 class ServerApplicationTests {
 
 	@Autowired
@@ -48,8 +47,8 @@ class ServerApplicationTests {
 	void testHomeHttp() throws Exception {
 		MvcResult result = mockMvc.perform(get("/").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andReturn();
-
-		assertEquals("Hello World from Spring Boot", result.getResponse().getContentAsString());
+		JSONObject json = new JSONObject(result.getResponse().getContentAsString());
+		assertEquals("Hello World from Spring Boot", json.getString("message"));
 
 	}
 
@@ -247,7 +246,7 @@ class ServerApplicationTests {
 		String rabbitMqUrl = getEnv("CLOUDAMQP_URL");
 		if (rabbitMqUrl == null) {
 			rabbitMq = URI.create("amqp://guest:guest@localhost:5672");
-		}else{
+		} else {
 			rabbitMq = URI.create(rabbitMqUrl);
 		}
 		assertEquals("amqp://guest:guest@localhost:5672", rabbitMq.toString());
