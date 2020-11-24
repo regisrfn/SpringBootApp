@@ -13,22 +13,21 @@ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-manag
 
 |       Orders       |
 |--------------------|
-|idOrder: UIID       |
+|idOrder: UUID       |
 |idParcel: String    |
 |idClient: String    |
 |totalValue:float    |
 |orderAddress: String|
 
 
-The values are inserted in the delivery database after receiving the messages from a separated service.
+The values are inserted in the delivery database inside the consumer app after receiving the messages.
 |       Delivery     |
 |--------------------|
-|idOrder: UIID       |
+|idOrder: UUID       |
 |idClient: String    |
 |orderAddress: String|
 
-H2 in-memory -
-Running in the server. Can be accessed by tcp connection: jdbc:h2:tcp://localhost:5050/mem:orderDATABASE
+H2 in-memory
 
 # REST API
 

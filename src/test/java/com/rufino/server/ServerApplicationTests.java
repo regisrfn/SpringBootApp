@@ -80,6 +80,19 @@ class ServerApplicationTests {
 	void addOrderTestHttp_ExpectedError() throws Exception {
 
 		JSONObject my_obj = new JSONObject();
+		my_obj.put("orderAddress", "Rua do meio");
+		MvcResult result = mockMvc
+				.perform(post("/api/v1/order").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+				.andExpect(status().isOk()).andReturn();
+
+		assertEquals("error operation", result.getResponse().getContentAsString());
+
+	}
+
+	@Test
+	void addOrderTestHttp_ExpectedError2() throws Exception {
+
+		JSONObject my_obj = new JSONObject();
 		my_obj.put("idCliente", 1111);
 		MvcResult result = mockMvc
 				.perform(post("/api/v1/order").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
