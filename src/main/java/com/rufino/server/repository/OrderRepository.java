@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rufino.server.dao.OrderDAO;
 import com.rufino.server.model.Order;
@@ -87,18 +86,16 @@ public class OrderRepository implements OrderDAO {
         try {
             String sql = "UPDATE Orders SET ";
             ObjectMapper om = new ObjectMapper();
-            om.setSerializationInclusion(Include.NON_NULL);
-
             String orderString = om.writeValueAsString(order);
             JSONObject jsonObject = new JSONObject(orderString);
             Iterator<String> keys = jsonObject.keys();
 
             while (keys.hasNext()) {
                 String key = keys.next();
-                if (!key.equals("totalValue")) {
-                    sql = sql + key.replaceAll("([A-Z])", "_$1").toLowerCase() + "='" + jsonObject.get(key) + "' ";
-                } else {
+                if (key.equals("totalValue") && jsonObject.get(key) != null) {
                     sql = sql + key.replaceAll("([A-Z])", "_$1").toLowerCase() + "=" + jsonObject.get(key) + " ";
+                } else {
+                    sql = sql + key.replaceAll("([A-Z])", "_$1").toLowerCase() + "='" + jsonObject.get(key) + "' ";
                 }
                 if (keys.hasNext()) {
                     sql = sql + ", ";

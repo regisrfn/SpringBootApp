@@ -188,6 +188,25 @@ class ServerApplicationTests {
 	}
 
 	@Test
+	public void updateOrderDAO_2() {
+		Order order = new Order();
+		createAndAssert(order);
+
+		Order updateOrder = new Order();
+		updateOrder.setIdClient("abc123 updated");
+		int result = orderService.update(order.getIdOrder(), updateOrder);
+		assertEquals(1, result);
+
+		List<Order> Db = orderService.getAll();
+		assertEquals(order.getIdOrder(), Db.get(0).getIdOrder());
+		assertEquals("abc123 updated", Db.get(0).getIdClient());
+		assertEquals(order.getIdParcel(), Db.get(0).getIdParcel());
+		assertEquals(order.getTotalValue(), Db.get(0).getTotalValue());
+		assertEquals(order.getOrderAddress(), Db.get(0).getOrderAddress());
+
+	}
+
+	@Test
 	public void updateOrderHttp() throws Exception {
 		Order order = new Order();
 		createAndAssert(order);
@@ -207,6 +226,29 @@ class ServerApplicationTests {
 		assertEquals("abc123 updated", Db.get(0).getIdClient());
 		assertEquals(order.getIdParcel(), Db.get(0).getIdParcel());
 		assertEquals(20.5f, Db.get(0).getTotalValue());
+		assertEquals(order.getOrderAddress(), Db.get(0).getOrderAddress());
+
+	}
+
+	@Test
+	public void updateOrderHttp_2() throws Exception {
+		Order order = new Order();
+		createAndAssert(order);
+
+		JSONObject my_obj = new JSONObject();
+		my_obj.put("idParcel", "abc456 updated");
+
+		MvcResult result = mockMvc
+				.perform(put(String.format("/api/v1/order/%s", order.getIdOrder()))
+						.contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+				.andExpect(status().isOk()).andReturn();
+		assertEquals("successfully operation", result.getResponse().getContentAsString());
+
+		List<Order> Db = orderService.getAll();
+		assertEquals(order.getIdOrder(), Db.get(0).getIdOrder());
+		assertEquals(order.getIdClient(), Db.get(0).getIdClient());
+		assertEquals("abc456 updated", Db.get(0).getIdParcel());
+		assertEquals(order.getTotalValue(), Db.get(0).getTotalValue());
 		assertEquals(order.getOrderAddress(), Db.get(0).getOrderAddress());
 
 	}
