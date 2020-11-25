@@ -52,16 +52,20 @@ public class OrderController {
 
     @PostMapping
     public String saveOrder(@RequestBody Order order) {
-        int op = orderService.addOrder(order);
-
-        if (op > 0) {
-            JSONObject deliveryObj = new JSONObject();
-            deliveryObj.put("idClient", order.getIdClient());
-            deliveryObj.put("orderAddress", order.getOrderAddress());
-            rabbitMqSender.send(deliveryObj.toString());
+        try {
+            int op = orderService.addOrder(order);
+            if (op > 0) {
+                JSONObject deliveryObj = new JSONObject();
+                deliveryObj.put("idClient", order.getIdClient());
+                deliveryObj.put("orderAddress", order.getOrderAddress());
+                rabbitMqSender.send(deliveryObj.toString());
+            }
+            return (op > 0) ? "successfully operation" : "error operation";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error operation";
         }
 
-        return (op > 0) ? "order added successfully" : "error operation";
     }
 
     @DeleteMapping("{id}")

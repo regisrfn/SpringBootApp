@@ -72,7 +72,7 @@ class ServerApplicationTests {
 				.perform(post("/api/v1/order").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
 				.andExpect(status().isOk()).andReturn();
 
-		assertEquals("order added successfully", result.getResponse().getContentAsString());
+		assertEquals("successfully operation", result.getResponse().getContentAsString());
 
 	}
 
@@ -91,6 +91,18 @@ class ServerApplicationTests {
 
 	@Test
 	void addOrderTestHttp_ExpectedError2() throws Exception {
+
+		JSONObject my_obj = new JSONObject();
+		my_obj.put("idClient", 1111);
+		my_obj.put("idParcel", 2222);
+		my_obj.put("totalValue", "error");
+		my_obj.put("orderAddress", "Rua do meio");
+		mockMvc.perform(post("/api/v1/order").contentType(MediaType.APPLICATION_JSON).content(my_obj.toString()))
+				.andExpect(status().isBadRequest()).andReturn();
+	}
+
+	@Test
+	void addOrderTestHttp_ExpectedError3() throws Exception {
 
 		JSONObject my_obj = new JSONObject();
 		my_obj.put("idCliente", 1111);
