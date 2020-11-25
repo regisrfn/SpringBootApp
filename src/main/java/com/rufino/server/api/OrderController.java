@@ -56,7 +56,7 @@ public class OrderController {
             int op = orderService.addOrder(order);
             if (op > 0) {
                 JSONObject deliveryObj = new JSONObject();
-                deliveryObj.put("idClient", order.getIdClient());
+                deliveryObj.put("idOrder", order.getIdOrder());
                 deliveryObj.put("orderAddress", order.getOrderAddress());
                 rabbitMqSender.send(deliveryObj.toString());
             }
