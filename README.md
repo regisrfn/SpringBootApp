@@ -7,8 +7,14 @@ Running in Ubuntu Focal 20.04 (LTS)
 - Docker | https://docs.docker.com/engine/install/ubuntu/ 
 
 # Docker
-# Running RabbitMq in linux
+# Running RabbitMq
+- create and run:
 docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+- stop 
+docker stop rabbitmq
+- start
+docker start rabbitmq
+
 
 # Database
 
